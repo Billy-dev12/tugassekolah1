@@ -126,4 +126,3 @@ require '../includes/navbar_teknisi.php';
     </div>
 </div>
 
-<?php require '../includes/footer.php'; ?>

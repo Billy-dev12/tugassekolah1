@@ -203,7 +203,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     border-radius: 12px;
     font-size: 0.9rem;
 }
-
     </style>
 </head>
 <body>
@@ -230,9 +229,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <i class="fas fa-fw fa-chart-bar"></i>
                 <span>Laporan</span>
             </a>
-            <a href="pengaturan.php" class="sidebar-item d-block">
+            <a href="../autentikasi/logout.php" class="sidebar-item d-block">
                 <i class="fas fa-fw fa-cog"></i>
-                <span>Pengaturan</span>
+                <span>Logout</span>
             </a>
         </div>
     </div>
@@ -297,7 +296,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <?php endif; ?>
                                 </td>
                             </tr>
-      <!-- Modal Assign Teknisi -->
+      <!-- Modal Assign Teknisi
 <div class="modal fade" id="assignModal<?= $row['id'] ?>" tabindex="-1" aria-labelledby="assignModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -331,7 +330,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             </form>
         </div>
     </div>
-</div>
+</div> -->
 
 
                             <?php endwhile; ?>

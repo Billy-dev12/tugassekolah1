@@ -50,7 +50,7 @@ $tiket = $koneksi->query("SELECT * FROM tiket_servis WHERE user_id='$user_id'");
                         <h6 class="mb-0"><i class="fas fa-user-circle me-2"></i> Menu Pelanggan</h6>
                     </div>
                     <div class="list-group list-group-flush">
-                        <a href="dashboard.php" class="list-group-item list-group-item-action active">
+                        <a href="#" class="list-group-item list-group-item-action active">
                             <i class="fas fa-tachometer-alt me-2"></i> Dashboard
                         </a>
                         <a href="../tiket/buat_tiket.php" class="list-group-item list-group-item-action">

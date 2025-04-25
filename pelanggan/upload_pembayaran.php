@@ -36,8 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     // Check file size (max 2MB)
-    if ($_FILES["bukti_pembayaran"]["size"] > 2000000) {
-        $error = "Ukuran file terlalu besar (maks 2MB)";
+    if ($_FILES["bukti_pembayaran"]["size"] > 20000000) {
+        $error = "Ukuran file terlalu besar (maks 20MB)";
         $uploadOk = 0;
     }
 
@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <p>
                         <strong>Bank ABC</strong><br>
                         No. Rekening: 123-456-7890<br>
-                        Atas Nama: Servis Komputer Kami
+                        Atas Nama: Servis Santuy
                     </p>
                 </div>
 
