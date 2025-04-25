@@ -18,7 +18,7 @@ if (isset($_SESSION['user_id'])) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Servis Komputer & HP</title>
+    <title>Servis Santuy</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
@@ -30,7 +30,7 @@ if (isset($_SESSION['user_id'])) {
     <nav class="navbar navbar-expand-lg navbar-light shadow">
         <div class="container">
             <a class="navbar-brand" href="index.php">
-                <i class="fas fa-tools text-primary"></i> <span class="fw-bold">ServisKomputer</span>
+                <i class="fas fa-tools text-primary"></i> <span class="fw-bold">Servis Santuy</span>
             </a>
             <div class="d-flex">
                 <a href="autentikasi/login.php" class="btn btn-outline-primary me-2">

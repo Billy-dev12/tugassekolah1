@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div class="card shadow-lg my-5">
                     <div class="card-header py-3 text-center">
                         <h4 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-tools"></i> Servis Komputer
+                            <i class="fas fa-tools"></i> Servis Santuy
                         </h4>
                     </div>
                     <div class="card-body p-5">

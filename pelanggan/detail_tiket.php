@@ -92,7 +92,7 @@ $back_url = $_SESSION['role'] == 'admin' ? 'admin/kelola_tiket.php' : 'dashboard
     } elseif ($_SESSION['role'] == 'teknisi') {
         include '../includes/navbar_teknisi.php';
     } else {
-        include '../includes/navbar_pelanggan.php';
+        include '../includes/navbar_admin.php';
     }
     ?>
 

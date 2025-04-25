@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
     <?php 
-    
+    include '../'
     ?>
     <div class="container mt-4">
         <h4 class="mb-4"><i class="fas fa-tools"></i> Tiket Servis yang Ditugaskan</h4>

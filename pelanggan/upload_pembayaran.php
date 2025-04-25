@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <?php include '../../includes/navbar_pelanggan.php'; ?>
+    <?php include '../includes/navbar_admin.php'; ?>
 
     <div class="container mt-4">
         <div class="card shadow">

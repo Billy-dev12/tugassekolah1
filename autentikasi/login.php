@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Servis Komputer</title>
+    <title>Login - Servis Santuy</title>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="assets/css/bootstrap.min.css" rel="stylesheet">
     <link href="assets/css/style.css" rel="stylesheet">
@@ -49,7 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <div class="card shadow-lg my-5">
                     <div class="card-header py-3 text-center">
                         <h4 class="m-0 font-weight-bold text-primary">
-                            <i class="fas fa-tools"></i> Servis Komputer
+                            <i class="fas fa-tools"></i> Servis Santuy
                         </h4>
                     </div>
                     <div class="card-body p-5">

@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif ($action == 'tolak') {
         $keterangan = bersihkan($_POST['keterangan']);
         $query = "UPDATE tiket_servis 
-                  SET status='selesai_diperbaiki', 
+                  SET status='servis_dibatalkan', 
                       bukti_pembayaran=NULL,
                       keterangan_admin='$keterangan'
                   WHERE id='$tiket_id'";

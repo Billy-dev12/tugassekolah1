@@ -40,7 +40,7 @@ if ($_SESSION['role'] == 'teknisi' && $tiket['teknisi_id'] != $_SESSION['user_id
 }
 
 // Tentukan tombol kembali berdasarkan role
-$back_url = $_SESSION['role'] == 'admin' ? 'admin/kelola_tiket.php' : 'dashboard.php';
+$back_url = $_SESSION['role'] == 'admin' ? 'kelola_tiket.php' : 'dashboard.php';
 ?>
 
 <!DOCTYPE html>
