@@ -1,0 +1,99 @@
+/* Warna utama */
+:root {
+    --primary-color: #4e73df;
+    --secondary-color: #f8f9fc;
+    --accent-color: #2e59d9;
+  }
+  
+  /* Layout dasar */
+  body {
+    font-family: 'Nunito', sans-serif;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Navbar */
+  .navbar {
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15);
+    background: white;
+  }
+  
+  .navbar-brand {
+    font-weight: 800;
+    color: var(--primary-color) !important;
+  }
+  
+  .navbar .nav-link {
+    font-weight: 600;
+  }
+  
+  /* Card */
+  .card {
+    border: none;
+    border-radius: 0.35rem;
+    box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.1);
+    transition: all 0.3s;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1.5rem 0 rgba(58, 59, 69, 0.2);
+  }
+  
+  .card-header {
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: 600;
+    border-radius: 0.35rem 0.35rem 0 0 !important;
+  }
+  
+  /* Tombol */
+  .btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+  }
+  
+  .btn-primary:hover {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+  }
+  
+  /* Hero section */
+  .hero-section {
+    background: linear-gradient(135deg, var(--primary-color) 0%, #224abe 100%);
+    color: white;
+    padding: 5rem 0;
+    margin-bottom: 3rem;
+  }
+  
+  /* Service cards */
+  .service-card {
+    border-left: 0.25rem solid var(--primary-color);
+  }
+  
+  /* Footer */
+  .footer {
+    background-color: #2c3e50;
+    color: white;
+    padding: 2rem 0;
+    margin-top: auto;
+  }
+  
+  /* Table */
+  .table {
+    border-radius: 0.35rem;
+    overflow: hidden;
+  }
+  
+  .table thead {
+    background-color: var(--secondary-color);
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .hero-section {
+      padding: 3rem 0;
+    }
+  }
