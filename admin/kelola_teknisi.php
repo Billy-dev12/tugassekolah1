@@ -210,7 +210,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <div class="sidebar">
         <div class="sidebar-brand">
             <i class="fas fa-tools me-2"></i>
-            <span>ServisKomputer</span>
+            <span>ServisSantuy</span>
         </div>
         <div class="sidebar-nav">
             <a href="dashboard.php" class="sidebar-item d-block">
