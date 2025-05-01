@@ -36,8 +36,8 @@ if (isset($_SESSION['user_id'])) {
                 <a href="autentikasi/login.php" class="btn btn-outline-primary me-2">
                     <i class="fas fa-sign-in-alt"></i> Login
                 </a>
-                <a href="autentikasi/registrasi.php" class="btn btn-primary">
-                    <i class="fas fa-user-plus"></i> Daftar
+                <a href="autentikasi/registrasi_teknisi.php" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> Daftar teknisi
                 </a>
             </div>
         </div>

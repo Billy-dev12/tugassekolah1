@@ -14,7 +14,8 @@ $query = "SELECT t.*,
           u.nama as nama_pelanggan, 
           u.no_hp as hp_pelanggan,
           ut.nama as nama_teknisi,
-          ut.no_hp as hp_teknisi
+          ut.no_hp as hp_teknisi,
+          ut.rata_rata_rating as rating_teknisi
           FROM tiket_servis t
           JOIN users u ON t.user_id = u.id
           LEFT JOIN users ut ON t.teknisi_id = ut.id
@@ -40,7 +41,38 @@ if ($_SESSION['role'] == 'teknisi' && $tiket['teknisi_id'] != $_SESSION['user_id
 }
 
 // Tentukan tombol kembali berdasarkan role
-$back_url = $_SESSION['role'] == 'admin' ? 'admin/kelola_tiket.php' : 'dashboard.php';
+$back_url = $_SESSION['role'] == 'admin' ? 'kelola_tiket.php' : 'dashboard.php';
+
+// Proses form rating
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['rating'])) {
+    $rating = (int)$_POST['rating'];
+    $komentar = bersihkan($_POST['komentar']);
+    $user_id = $_SESSION['user_id'];
+    $teknisi_id = $tiket['teknisi_id'];
+
+    if ($rating >= 1 && $rating <= 5) {
+        // Simpan rating ke tabel rating_teknisi
+        $query = "INSERT INTO rating_teknisi (id_tiket, id_user, id_teknisi, rating, komentar)
+                  VALUES (?, ?, ?, ?, ?)";
+        $stmt = $koneksi->prepare($query);
+        $stmt->bind_param("iiiss", $tiket_id, $user_id, $teknisi_id, $rating, $komentar);
+        $stmt->execute();
+
+        // Update rata-rata rating teknisi
+        $update_query = "UPDATE users 
+                         SET rata_rata_rating = (SELECT AVG(rating) FROM rating_teknisi WHERE id_teknisi = ?)
+                         WHERE id = ?";
+        $update_stmt = $koneksi->prepare($update_query);
+        $update_stmt->bind_param("ii", $teknisi_id, $teknisi_id);
+        $update_stmt->execute();
+
+        $_SESSION['success'] = "Rating berhasil diberikan!";
+        header("Location: detail_tiket.php?id=$tiket_id");
+        exit();
+    } else {
+        $_SESSION['error'] = "Rating harus antara 1 dan 5!";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -51,6 +83,7 @@ $back_url = $_SESSION['role'] == 'admin' ? 'admin/kelola_tiket.php' : 'dashboard
     <title>Detail Tiket #<?= str_pad($tiket['id'], 4, '0', STR_PAD_LEFT) ?></title>
     <link href="../assets/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css">
     <style>
         .tiket-header {
             border-left: 5px solid #4e73df;
@@ -85,16 +118,6 @@ $back_url = $_SESSION['role'] == 'admin' ? 'admin/kelola_tiket.php' : 'dashboard
     </style>
 </head>
 <body>
-    <!-- Navbar sesuai role -->
-    <?php 
-    if ($_SESSION['role'] == 'admin') {
-        include '../includes/navbar_admin.php';
-    } elseif ($_SESSION['role'] == 'teknisi') {
-        include '../includes/navbar_teknisi.php';
-    } else {
-        include '../includes/navbar_admin.php';
-    }
-    ?>
 
     <div class="container mt-4 mb-5">
         <!-- Header dan tombol kembali -->
@@ -135,17 +158,15 @@ $back_url = $_SESSION['role'] == 'admin' ? 'admin/kelola_tiket.php' : 'dashboard
                                 </span>
                             </div>
                         </div>
-                        
+
                         <div class="detail-row row">
                             <div class="col-md-4 fw-bold">Jenis Perangkat</div>
                             <div class="col-md-8"><?= ucfirst($tiket['device_type']) ?></div>
                         </div>
-                        
                         <div class="detail-row row">
                             <div class="col-md-4 fw-bold">Keluhan</div>
                             <div class="col-md-8"><?= nl2br($tiket['keluhan']) ?></div>
                         </div>
-                        
                         <?php if (!empty($tiket['keterangan_teknisi'])): ?>
                         <div class="detail-row row">
                             <div class="col-md-4 fw-bold">Keterangan Teknisi</div>
@@ -159,78 +180,56 @@ $back_url = $_SESSION['role'] == 'admin' ? 'admin/kelola_tiket.php' : 'dashboard
                             <div class="col-md-8">Rp <?= number_format($tiket['biaya_servis'], 0, ',', '.') ?></div>
                         </div>
                         <?php endif; ?>
-                        
-                        <?php if ($_SESSION['role'] == 'admin' && !empty($tiket['bukti_pembayaran'])): ?>
-                        <div class="detail-row row">
-                            <div class="col-md-4 fw-bold">Bukti Pembayaran</div>
-                            <div class="col-md-8">
-                                <a href="../uploads/pembayaran/<?= $tiket['bukti_pembayaran'] ?>" target="_blank" class="btn btn-sm btn-outline-primary">
-                                    <i class="fas fa-eye"></i> Lihat Bukti
-                                </a>
-                            </div>
-                        </div>
-                        <?php endif; ?>
                     </div>
                 </div>
 
-                <!-- Untuk Pembeli: Tombol Upload Pembayaran -->
+                <!-- Form Rating Teknisi untuk pelanggan -->
+                <?php if ($_SESSION['role'] == 'pelanggan' && $tiket['status'] == 'lunas' && empty($tiket['rating'])): ?>
+                <div class="card info-card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-star"></i> Berikan Rating Teknisi</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST">
+                            <div class="mb-3">
+                                <label for="rating" class="form-label">Rating</label>
+                                <select name="rating" class="form-select" required>
+                                    <option value="">Pilih Rating</option>
+                                    <option value="1">1 - Sangat Buruk</option>
+                                    <option value="2">2 - Buruk</option>
+                                    <option value="3">3 - Cukup</option>
+                                    <option value="4">4 - Baik</option>
+                                    <option value="5">5 - Sangat Baik</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="komentar" class="form-label">Komentar</label>
+                                <textarea name="komentar" class="form-control" rows="4" placeholder="Tuliskan komentar Anda" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="fas fa-check"></i> Kirim Rating
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <?php endif; ?>
+
                 <?php if ($_SESSION['role'] == 'pelanggan' && $tiket['status'] == 'selesai_diperbaiki'): ?>
                 <div class="card info-card mt-4">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-money-bill-wave"></i> Pembayaran</h5>
+                        <h5 class="mb-0"><i class="fas fa-money-bill-wave"></i> Upload Pembayaran</h5>
                     </div>
                     <div class="card-body">
-                        <div class="alert alert-warning">
-                            <p>Silakan lakukan pembayaran sebesar:</p>
-                            <h4 class="text-center my-3">Rp <?= number_format($tiket['biaya_servis'], 0, ',', '.') ?></h4>
-                            <p>Ke rekening berikut:</p>
-                            <p class="ps-3">
-                                <strong>Bank ABC</strong><br>
-                                No. Rekening: 1234567890<br>
-                                Atas Nama: Servis Komputer
-                            </p>
-                            <div class="text-center mt-4">
-                                <a href="upload_pembayaran.php?id=<?= $tiket['id'] ?>" class="btn btn-primary btn-lg">
-                                    <i class="fas fa-upload"></i> Upload Bukti Pembayaran
-                                </a>
-                            </div>
-                        </div>
+                        <a href="upload_pembayaran.php?id=<?= $tiket['id'] ?>" class="btn btn-primary w-100">
+                            <i class="fas fa-upload"></i> Upload Bukti Pembayaran
+                        </a>
                     </div>
                 </div>
                 <?php endif; ?>
             </div>
 
-            <!-- Kolom Informasi Tambahan -->
+            <!-- Kolom Informasi Teknisi -->
             <div class="col-lg-4">
-                <!-- Card Informasi Pelanggan -->
-                <div class="card info-card">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-user"></i> Informasi Pelanggan</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="detail-row">
-                            <div class="fw-bold">Nama</div>
-                            <div><?= $tiket['nama_pelanggan'] ?></div>
-                        </div>
-                        <div class="detail-row">
-                            <div class="fw-bold">No. HP</div>
-                            <div><?= $tiket['hp_pelanggan'] ?></div>
-                        </div>
-                        <div class="detail-row">
-                            <div class="fw-bold">Tanggal Dibuat</div>
-                            <div><?= date('d/m/Y H:i', strtotime($tiket['tanggal_dibuat'])) ?></div>
-                        </div>
-                        <?php if ($tiket['tanggal_selesai']): ?>
-                        <div class="detail-row">
-                            <div class="fw-bold">Tanggal Selesai</div>
-                            <div><?= date('d/m/Y H:i', strtotime($tiket['tanggal_selesai'])) ?></div>
-                        </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-
-                <!-- Card Informasi Teknisi (jika ada) -->
-                <?php if (!empty($tiket['teknisi_id'])): ?>
                 <div class="card info-card mt-4">
                     <div class="card-header">
                         <h5 class="mb-0"><i class="fas fa-user-cog"></i> Teknisi</h5>
@@ -244,125 +243,15 @@ $back_url = $_SESSION['role'] == 'admin' ? 'admin/kelola_tiket.php' : 'dashboard
                             <div class="fw-bold">No. HP Teknisi</div>
                             <div><?= $tiket['hp_teknisi'] ?></div>
                         </div>
+                        <div class="detail-row">
+                            <div class="fw-bold">Rata-rata Rating</div>
+                            <div><?= number_format($tiket['rating_teknisi'], 2) ?></div>
+                        </div>
                     </div>
                 </div>
-                <?php endif; ?>
-
-                <!-- Aksi untuk Admin/Teknisi -->
-                <?php if ($_SESSION['role'] == 'admin' || $_SESSION['role'] == 'teknisi'): ?>
-                <div class="card info-card mt-4">
-                    <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-cog"></i> Aksi</h5>
-                    </div>
-                    <div class="card-body">
-                        <?php if ($_SESSION['role'] == 'admin' && $tiket['status'] == 'pending'): ?>
-                            <form method="POST" action="admin/kelola_tiket.php" class="mb-3">
-                                <input type="hidden" name="tiket_id" value="<?= $tiket['id'] ?>">
-                                <input type="hidden" name="action" value="konfirmasi">
-                                <button type="submit" class="btn btn-success w-100 btn-action">
-                                    <i class="fas fa-check"></i> Konfirmasi
-                                </button>
-                            </form>
-                        <?php endif; ?>
-
-                        <?php if ($_SESSION['role'] == 'admin' && $tiket['status'] == 'dikonfirmasi_admin'): ?>
-                            <button class="btn btn-info w-100 btn-action mb-3" 
-                                    data-bs-toggle="modal" data-bs-target="#assignModal">
-                                <i class="fas fa-user-cog"></i> Assign Teknisi
-                            </button>
-                        <?php endif; ?>
-
-                        <?php if ($_SESSION['role'] == 'admin' && $tiket['status'] == 'menunggu_pembayaran'): ?>
-                            <a href="admin/konfirmasi_pembayaran.php?id=<?= $tiket['id'] ?>" 
-                               class="btn btn-primary w-100 btn-action mb-3">
-                                <i class="fas fa-money-bill-wave"></i> Verifikasi Pembayaran
-                            </a>
-                        <?php endif; ?>
-
-                        <?php if ($_SESSION['role'] == 'teknisi' && $tiket['status'] == 'diproses_teknisi'): ?>
-                            <button class="btn btn-success w-100 btn-action" 
-                                    data-bs-toggle="modal" data-bs-target="#selesaiModal">
-                                <i class="fas fa-check-double"></i> Selesaikan
-                            </button>
-                        <?php endif; ?>
-                    </div>
-                </div>
-                <?php endif; ?>
             </div>
         </div>
     </div>
-
-    <!-- Modal Assign Teknisi (untuk Admin) -->
-    <?php if ($_SESSION['role'] == 'admin' && $tiket['status'] == 'dikonfirmasi_admin'): ?>
-    <div class="modal fade" id="assignModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Assign Teknisi</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form method="POST" action="admin/kelola_tiket.php">
-                    <div class="modal-body">
-                        <input type="hidden" name="tiket_id" value="<?= $tiket['id'] ?>">
-                        <input type="hidden" name="action" value="assign_teknisi">
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Pilih Teknisi</label>
-                            <select name="teknisi_id" class="form-select" required>
-                                <option value="">Pilih teknisi...</option>
-                                <?php 
-                                $teknisi_list = $koneksi->query("SELECT * FROM users WHERE role='teknisi'");
-                                while ($tech = $teknisi_list->fetch_assoc()): ?>
-                                    <option value="<?= $tech['id'] ?>">
-                                        <?= $tech['nama'] ?> (<?= $tech['username'] ?>)
-                                    </option>
-                                <?php endwhile; ?>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">Assign</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <?php endif; ?>
-
-    <!-- Modal Selesaikan Tiket (untuk Teknisi) -->
-    <?php if ($_SESSION['role'] == 'teknisi' && $tiket['status'] == 'diproses_teknisi'): ?>
-    <div class="modal fade" id="selesaiModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Selesaikan Tiket #<?= str_pad($tiket['id'], 4, '0', STR_PAD_LEFT) ?></h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <form method="POST" action="teknisi/proses_tiket.php">
-                    <div class="modal-body">
-                        <input type="hidden" name="tiket_id" value="<?= $tiket['id'] ?>">
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Biaya Servis (Rp)</label>
-                            <input type="number" name="biaya_servis" class="form-control" required min="0">
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label class="form-label">Keterangan Perbaikan</label>
-                            <textarea name="keterangan_teknisi" class="form-control" rows="5" required
-                                      placeholder="Jelaskan perbaikan yang dilakukan, komponen yang diganti, dll."></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <?php endif; ?>
 
     <script src="../assets/js/bootstrap.bundle.min.js"></script>
 </body>

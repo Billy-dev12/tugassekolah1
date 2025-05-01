@@ -109,6 +109,8 @@ $tiket = $koneksi->query("SELECT * FROM tiket_servis WHERE user_id='$user_id'");
                                                     case 'pending': $badge_class = 'bg-warning'; break;
                                                     case 'proses': $badge_class = 'bg-info'; break;
                                                     case 'selesai': $badge_class = 'bg-success'; break;
+                                                    case 'dikonfirmasi_admin': $badge_class = 'bg-primary'; break;
+                                                    case 'lunas': $badge_class = 'bg-success'; break;
                                                     default: $badge_class = 'bg-secondary';
                                                 }
                                                 ?>

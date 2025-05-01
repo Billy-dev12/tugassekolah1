@@ -55,9 +55,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Konfirmasi Pembayaran</title>
     <link href="../../assets/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css">
 </head>
 <body>
-    <?php include '../../includes/navbar_admin.php'; ?>
+    <?php include '../includes/navbar_admin.php'; ?>
 
     <div class="container mt-4">
         <div class="card shadow">
@@ -84,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                  style="max-height: 200px;"
                                  alt="Bukti Pembayaran">
                             <p class="mt-2">
-                                <a href="../../uploads/pembayaran/<?= $tiket['bukti_pembayaran'] ?>" 
+                                <a href="../uploads/pembayaran/<?= $tiket['bukti_pembayaran'] ?>" 
                                    target="_blank" class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-expand"></i> Lihat Full Size
                                 </a>
